@@ -16,6 +16,7 @@ export class OverworldMap {
   lowerImage: HTMLImageElement;
   upperImage: HTMLImageElement;
   matrix_map: number[][];
+  scale: number;
 
   constructor(config: OverworldMapConfig) {
     this.gameObjects = config.gameObjects;
@@ -23,6 +24,7 @@ export class OverworldMap {
     this.lowerImage.src = config.lowerSrc;
     this.upperImage = new Image();
     this.upperImage.src = config.upperSrc;
+    this.scale = 1;
     this.matrix_map = [
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -30,9 +32,9 @@ export class OverworldMap {
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 5, 1, 1, 1],
+      [1, 1, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     ]
@@ -48,10 +50,10 @@ export class OverworldMap {
           this.matrix_map[row][column] * MAP_SPRITE_SIZE.height, // top cut
           MAP_SPRITE_SIZE.width, // w cut
           MAP_SPRITE_SIZE.height, // h cut
-          column * MAP_SPRITE_SIZE.width, // x position
-          row * MAP_SPRITE_SIZE.height, // y position
-          MAP_SPRITE_SIZE.width, // w to resize
-          MAP_SPRITE_SIZE.height // h to resize
+          column * MAP_SPRITE_SIZE.width * this.scale, // x position
+          row * MAP_SPRITE_SIZE.height * this.scale, // y position
+          MAP_SPRITE_SIZE.width * this.scale, // w to resize
+          MAP_SPRITE_SIZE.height * this.scale // h to resize
         )
       }
 
