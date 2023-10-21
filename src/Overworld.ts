@@ -2,6 +2,8 @@ import { Controllers } from "./Controllers";
 import { GameObject } from "./GameObject";
 import { OverworldMap, OverworldMaps } from "./OverworldMap";
 import { Player } from "./Player";
+import { AnimationsList } from "./Sprite";
+import { Animations } from './utils/Constants';
 
 export interface OverworldConfig {
   canvas: HTMLCanvasElement;
@@ -16,15 +18,34 @@ export class Overworld {
   objects: GameObject[];
   map: OverworldMap;
   controller: Controllers;
+  start: number;
+  previousTimeStamp: number;
+  fps = 60;
+  second = 1000;
+  timePerFrame = this.second / this.fps;
 
   constructor(config: OverworldConfig) {
     this.canvas = config.canvas
     this.ctx = config.ctx
     this.objectSelected = config.objectSelected;
     this.objects = [];
-    this.map = new OverworldMap(OverworldMaps.DemoRoom)
-    this.objectSelected = new Player({ overworld: this });
+    this.map = new OverworldMap(OverworldMaps.DemoRoom);
+    const animations: AnimationsList = {}
+    animations[Animations.iddleDown] = [[1, 2]];
+    animations[Animations.walkDown] = [[0, 2], [1, 2], [2, 2], [1, 2]];
+    animations[Animations.walkUp] = [[0, 0], [1, 0], [2, 0]], [1, 0];
+    animations[Animations.walkLeft] = [[0, 3], [1, 3], [2, 3], [1, 3]];
+    animations[Animations.walkRight] = [[0, 1], [1, 1], [2, 1], [1, 1]];
+
+    this.objectSelected = new Player({
+      overworld: this,
+      src: "/assets/sprites/characters/characters.png",
+      animations
+    });
+
     this.controller = new Controllers({ overworld: this });
+    this.start = 0;
+    this.previousTimeStamp = 0;
   }
 
   update(): void {
@@ -46,12 +67,18 @@ export class Overworld {
 
   initGame(): void {
     this.controller.init();
-    this.gameLoop()
+    this.gameLoop(this.previousTimeStamp)
   }
 
-  gameLoop() {
-    this.update();
-    this.draw();
-    window.requestAnimationFrame(() => this.gameLoop())
+  gameLoop(timeStamp: DOMHighResTimeStamp) {
+
+    const elapsed = timeStamp - this.start;
+
+    if (elapsed > this.timePerFrame) {
+      this.update();
+      this.draw();
+      this.start = timeStamp;
+    }
+    window.requestAnimationFrame((time) => this.gameLoop(time))
   }
 }

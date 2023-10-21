@@ -15,5 +15,9 @@ export const Actions = {
 }
 
 export const Animations = {
-  iddleDown: 'iddleDown'
+  iddleDown: 'iddle-down',
+  walkDown: 'walk-down',
+  walkUp: 'walk-up',
+  walkLeft: 'walk-left',
+  walkRight: 'walk-right'
 }

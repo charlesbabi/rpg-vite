@@ -9,24 +9,36 @@ export interface Size {
 export interface SpriteConfig {
   src: string;
   gameObject: GameObject;
-  animation?: Animation[];
+  animations?: Record<string, [number, number][]>;
   currentAnimation?: string;
   size?: Size;
 }
 
-export class Animation {
-  constructor() {
-  }
+export interface AnimationConfig {
+  x: number;
+  y: number;
+  xRange: number[];
+  yRange: number[];
 }
+
+export interface AnimationsList extends Record<string, [number, number][]> {
+
+}
+
 
 export class Sprite {
   image: HTMLImageElement;
   gameObject: GameObject;
-  animation: Animation;
+  animations: AnimationsList;
   currentAnimation: string;
   isLoaded = false;
   size: Size;
   scale: number;
+
+  // Animation
+  animationFrame = 0;
+  animationFrameLimit = 10;
+  currentAnimationFrame = 0;
 
   constructor(config: SpriteConfig) {
     //set up image
@@ -39,23 +51,46 @@ export class Sprite {
       width: SPRITES_SIZE.width,
       height: SPRITES_SIZE.height
     }
-    this.scale = 1;
+    this.scale = 2;
+    this.animations = config.animations ?? {};
 
     //reference to game object
     this.gameObject = config.gameObject;
 
-    //animations
-    this.animation = config.animation ?? new Animation
     this.currentAnimation = config.currentAnimation ?? Animations.iddleDown;
   }
 
+  get frame(): [number, number] {
+    return this.animations[this.currentAnimation][this.currentAnimationFrame];
+  }
+
+  changeAnimation(animation: string) {
+    if (this.currentAnimation !== animation) {
+      this.currentAnimation = animation;
+      this.currentAnimationFrame = 0;
+    }
+  }
+
+  updateAnimationFrame() {
+    this.animationFrame++;
+    if (this.animationFrame > this.animationFrameLimit) {
+      this.currentAnimationFrame++;
+      this.animationFrame = 0;
+    }
+    if (this.frame === undefined) {
+      this.currentAnimationFrame = 0;
+    }
+  }
+
   draw(ctx: CanvasRenderingContext2D) {
-    const x = this.gameObject.position.x * this.size.width / 2;
-    const y = this.gameObject.position.y * this.size.height / 2;
+    const x = this.gameObject.position.x;
+    const y = this.gameObject.position.y;
+
+    const [frameX, frameY] = this.frame;
 
     ctx.drawImage(this.image,
-      2 * this.size.width, // left cut
-      2 * this.size.height, // top cut
+      frameX * this.size.width, // left cut
+      frameY * this.size.height, // top cut
       this.size.width, // w cut
       this.size.height, // h cut
       x, // x position
@@ -63,5 +98,6 @@ export class Sprite {
       this.size.width * this.scale, // w to resize
       this.size.height * this.scale // h to resize
     )
+    this.updateAnimationFrame();
   }
 }

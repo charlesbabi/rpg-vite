@@ -1,6 +1,4 @@
-import { Controllers } from './Controllers';
 import { Overworld } from './Overworld';
-import { Player } from './Player';
 import './style.css'
 const BOARD_WIDHT = 800;
 const BOARD_HEIGHT = 600;
@@ -19,8 +17,5 @@ const BOARD_HEIGHT = 600;
 
   // Create overworld
   const overworld = new Overworld({ canvas, ctx });
-
-  const hero = new Player({ overworld })
-  overworld.objectSelected = hero;
   overworld.initGame();
 })();

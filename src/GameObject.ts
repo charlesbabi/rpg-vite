@@ -1,6 +1,6 @@
 import { Overworld } from "./Overworld";
-import { Sprite } from "./Sprite";
-import { Actions, DEFAULT_DIRECTION } from "./utils/Constants";
+import { AnimationsList, Sprite } from "./Sprite";
+import { Actions, Animations, DEFAULT_DIRECTION } from "./utils/Constants";
 
 export interface PositionConfig {
   x?: number;
@@ -22,6 +22,7 @@ export interface GameObjectConfig {
   y?: number,
   direction?: string
   src?: string
+  animations: AnimationsList;
 }
 
 export class GameObject {
@@ -32,7 +33,6 @@ export class GameObject {
   overworld: Overworld;
   sprite: Sprite;
   speed: number;
-  directionUpdate: any;
 
   constructor(config: GameObjectConfig) {
     this.position = new Position({ x: config.x ?? 0, y: config.y ?? 0 });
@@ -41,35 +41,35 @@ export class GameObject {
     this.speed = 1;
     this.direction = config.direction || DEFAULT_DIRECTION;
     this.overworld = config.overworld;
+
     this.sprite = new Sprite({
-      src: config.src ?? "/assets/sprites/characters/characters.png",
+      src: config.src ?? "",
       gameObject: this,
       size: {
         width: this.width,
         height: this.height
-      }
+      },
+      animations: config.animations ?? {}
     });
-    this.directionUpdate = {
-      up: ["y", -this.speed],
-      down: ["y", this.speed],
-      left: ["x", -this.speed],
-      right: ["x", this.speed],
-    }
   }
 
   updatePosition() {
     this.overworld.controller.heldDirections.forEach((dir) => {
       if (dir === Actions.up) {
         this.position.y -= this.speed;
+        this.sprite.changeAnimation(Animations.walkUp);
       }
       if (dir === Actions.down) {
         this.position.y += this.speed;
+        this.sprite.changeAnimation(Animations.walkDown);
       }
       if (dir === Actions.left) {
         this.position.x -= this.speed;
+        this.sprite.changeAnimation(Animations.walkLeft);
       }
       if (dir === Actions.right) {
         this.position.x += this.speed;
+        this.sprite.changeAnimation(Animations.walkRight);
       }
     })
   }
