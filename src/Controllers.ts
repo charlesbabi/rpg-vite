@@ -1,20 +1,16 @@
-import { Overworld } from "./Overworld";
-import { Actions } from "./utils/Constants";
+import { type Overworld } from './Overworld'
+import { Actions } from './utils/Constants'
 
 export interface ControllerConfig {
-  overworld: Overworld;
-}
-
-export interface ActionKey {
-
+  overworld: Overworld
 }
 
 export class Controllers {
   heldDirections: string[] = []
-  map: Record<string, string>;
-  config: ControllerConfig;
+  map: Record<string, string>
+  config: ControllerConfig
   constructor(config: ControllerConfig) {
-    this.config = config;
+    this.config = config
     this.map = {
       ArrowUp: Actions.up,
       KeyW: Actions.up,
@@ -23,27 +19,27 @@ export class Controllers {
       ArrowLeft: Actions.left,
       KeyA: Actions.left,
       ArrowRight: Actions.right,
-      KeyD: Actions.right,
+      KeyD: Actions.right
     }
   }
 
-  get direction() {
-    return this.heldDirections;
+  get direction(): string[] {
+    return this.heldDirections
   }
 
-  init() {
+  init(): void {
     window.addEventListener('keydown', event => {
-      const dir = this.map[event.code];
-      if (dir && this.heldDirections.indexOf(dir) === -1) {
-        this.heldDirections.unshift(dir);
+      const dir = this.map[event.code]
+      if (dir && !this.heldDirections.includes(dir)) {
+        this.heldDirections.unshift(dir)
       }
     })
 
     window.addEventListener('keyup', event => {
-      const dir = this.map[event.code];
-      const index = this.heldDirections.indexOf(dir);
+      const dir = this.map[event.code]
+      const index = this.heldDirections.indexOf(dir)
       if (index > -1) {
-        this.heldDirections.splice(index, 1);
+        this.heldDirections.splice(index, 1)
       }
     })
   }
